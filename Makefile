@@ -5,7 +5,7 @@ CC := gcc
 SRCDIR := src
 BUILDDIR := build
 CFLAGS := -g -Wall
-LFLAGS := -lcurl
+LFLAGS := -lcurl -ljson-c
 TARGET := bin/restfs
 
 SRCEXT := c

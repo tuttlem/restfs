@@ -117,8 +117,11 @@ char* http_post(const char *url, const char *body) {
       curl_easy_setopt(curl, CURLOPT_URL, url);
       curl_easy_setopt(curl, CURLOPT_POST, 1L);
 
-      curl_easy_setopt(curl, CURLOPT_POSTFIELDS, body);
-      curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, strlen(body));
+      /* only specify a body if it was given */
+      if (body) {
+         curl_easy_setopt(curl, CURLOPT_POSTFIELDS, body);
+         curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, strlen(body));
+      }
 
       curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, http_write_callback);
       curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void *)&buf);
@@ -149,4 +152,43 @@ char* http_post(const char *url, const char *body) {
    }
 
    return buf.data;
+}
+
+/** Performs a http get against the specified URL and deserializes the response
+ *  into a json object */
+json_object* rest_get(const char *url) {
+   char *response = http_get(url);
+   json_object *obj = NULL;
+
+   if (response) {
+      obj = json_tokener_parse(response);
+
+      /* no longer need the raw response */
+      free(response);
+   }
+
+   return obj;
+}
+
+/** Performs a http post against the specified URL and deserializes the response
+ *  into a json object. A body for the post can be optionally specified */
+json_object* rest_post(const char *url, json_object *body) {
+   char *request = NULL, *response = NULL;
+   json_object *obj = NULL;
+
+   /* serialize the body if it was specified */
+   if (body) {
+      request = json_object_to_json_string(body);
+   }
+
+   response = http_post(url, request);
+
+   if (response) {
+      obj = json_tokener_parse(response);
+
+      /* no longer need the raw response */
+      free(response);
+   }
+
+   return obj;
 }

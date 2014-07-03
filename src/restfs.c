@@ -15,15 +15,9 @@ int main(int argc, char *argv[]) {
       return 1;
    }
 
-   // char *data = http_get(argv[1]);
-   char *data = http_post(argv[1], "{ \"key\": \"value\" }");
-
-   if (data) {
-      printf("%s", data);
-      free(data);
-   } else {
-      printf("Nothing received!");
-   }
+   json_object *res = rest_get("http://ip.jsontest.com/");
+   printf("%s", json_object_to_json_string(res));
+   json_object_put(res);
 
    if (restfs_exit() != 0) {
       fprintf(stderr, "error: failed to teardown restfs\n");
