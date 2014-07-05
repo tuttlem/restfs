@@ -1,5 +1,9 @@
 
+#include "restfs.h"
 #include "rest.h"
+#include "fsapi.h"
+
+char* restfs_baseuri = NULL;
 
 /** Initialises global resources required by the application */
 int restfs_init(void);
@@ -15,29 +19,7 @@ int main(int argc, char *argv[]) {
       return 1;
    }
 
-   struct _rest_response *get, *put, *post, *delete;
-   char *uri = "http://requestb.in/vnowp2vn";
-
-   printf("Sending get . . .");
-   get = rest_get(uri);
-   printf("%ld (%s)\n", get->status, get->data);
-
-   printf("Sending post . . .");
-   post = rest_post(uri, "{ }");
-   printf("%ld (%s)\n", post->status, post->data);
-
-   printf("Sending put . . .");
-   put = rest_put(uri, "{ }");
-   printf("%ld (%s)\n", put->status, put->data);
-
-   printf("Sending delete . . .");
-   delete = rest_delete(uri);
-   printf("%ld (%s)\n", delete->status, delete->data);
-
-   rest_destroy_response(get);
-   rest_destroy_response(put);
-   rest_destroy_response(delete);
-   rest_destroy_response(post);
+   restfs_run(argc, argv, "");
 
    if (restfs_exit() != 0) {
       fprintf(stderr, "error: failed to teardown restfs\n");

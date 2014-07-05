@@ -4,8 +4,8 @@
 CC := gcc
 SRCDIR := src
 BUILDDIR := build
-CFLAGS := -g -Wall
-LFLAGS := -lcurl -ljson-c
+CFLAGS := -g -Wall -D_FILE_OFFSET_BITS=64
+LFLAGS := -lcurl -ljson-c -lfuse
 TARGET := bin/restfs
 
 SRCEXT := c
