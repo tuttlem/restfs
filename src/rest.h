@@ -9,12 +9,21 @@
 #include <curl/curl.h>
 #include <json-c/json.h>
 
-/** Performs a http get against the specified URL and deserializes the response
- *  into a json object */
-json_object* rest_get(const char *url);
+#define rest_get(uri)         http_io(uri, NULL, "GET")
+#define rest_delete(uri)      http_io(uri, NULL, "DELETE")
+#define rest_post(uri, body)  http_io(uri, body, "POST")
+#define rest_put(uri, body)   http_io(uri, body, "PUT")
 
-/** Performs a http post against the specified URL and deserializes the response
- *  into a json object. A body for the post can be optionally specified */
-json_object* rest_post(const char *url, json_object *body);
+struct _rest_response {
+   char *data;
+   json_object *json;
+   long status;
+};
+
+/** Performs data I/O on HTTP resources */
+struct _rest_response* http_io(const char *url, const char *body, const char *type);
+
+/** Destroys a rest response */
+void rest_destroy_response(struct _rest_response *res);
 
 #endif
