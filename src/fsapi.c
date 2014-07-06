@@ -25,6 +25,23 @@ char* build_uri(const char *action, const char *path) {
 }
 
 static int restfs_getattr(const char *path, struct stat *stbuf) {
+   /* build the uri, and make the request */
+   char *uri = build_uri("getattr", path);
+   struct _rest_response *res = rest_get(uri);
+
+   memset(stbuf, 0, sizeof(struct stat));
+
+   /* todo: interpret the response */
+   if (res->state == 200) {
+
+   } else if (res->state == 404) {
+      return -ENOENT;
+   }
+
+   /* free up any resources */
+   free(uri);
+   rest_destroy_response(res);
+
    return 0;
 }
 
@@ -48,5 +65,5 @@ static struct fuse_operations restfs_ops = {
 };
 
 void restfs_run(int argc, char **argv, const char *baseurl) {
-   fuse_main(argc, argv, &restfs_ops);
+   fuse_main(argc, argv, &restfs_ops, NULL);
 }
